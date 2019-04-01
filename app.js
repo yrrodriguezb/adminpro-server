@@ -1,8 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
-
-
+const bodyParser = require('body-parser');
 const app = express();
+const routes = require('./routes');
 
 // Conexion base de datos
 mongoose.connection.openUri('mongodb://localhost:27017/hospitaldb', (err, res) => {
@@ -11,15 +11,13 @@ mongoose.connection.openUri('mongodb://localhost:27017/hospitaldb', (err, res) =
   console.log('Base de datos \x1b[32m%s\x1b[0m',  'online');
 });
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-app.get('/', (req, res, next) => {
-  res.status(200).json({
-    ok: true,
-    mensaje: 'Peticion realizada correctamente'
-  });
+app.use('/', routes.appRoute);
+app.use('/login', routes.loginRoute);
+app.use('/usuarios', routes.usuarioRoute);
 
-  res.end();
-});
 
 
 app.listen(3000, () => {
