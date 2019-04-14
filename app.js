@@ -14,11 +14,20 @@ mongoose.connection.openUri('mongodb://localhost:27017/hospitaldb', (err, res) =
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+/* 
+Server Index Config
+var serverIndex = require('serve-index');
+app.use(express.static(__dirname + '/'))
+app.use('/uploads', serverIndex(__dirname + '/uploads')); */
+
 app.use('/', routes.appRoute);
+app.use('/busqueda', routes.busquedaRoute);
+app.use('/hospitales', routes.hospitalRoute);
 app.use('/login', routes.loginRoute);
+app.use('/medicos', routes.medicoRoute);
+app.use('/upload', routes.uploadRoute);
 app.use('/usuarios', routes.usuarioRoute);
-
-
+app.use('/img', routes.imagenesRoute);
 
 app.listen(3000, () => {
   console.log('Express server runiing in port: 3000 \x1b[32m%s\x1b[0m',  'online');

@@ -1,20 +1,20 @@
 const express = require('express')
 const app = express();
-const bcrypt = require('bcryptjs');
-const Usuario = require('../models/usuario');
+const Medico = require('../models/medico');
 const middlewareAutenticacion = require('../middleware/autenticacion');
 
 
-// Obtener todos los usuarios
+// Obtener todos los medicos
 app.get('/', (req, res, next) => {
   let desde = req.query.desde || 0;
   desde = Number(desde);
 
-  
-  Usuario.find({}, 'nombre email img role')
+  Medico.find({})
     .skip(desde)
     .limit(5)
-    .exec((err, usuarios) => {
+    .populate('usuario', 'nombre email')
+    .populate('hospital')
+    .exec((err, medicos) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -23,31 +23,28 @@ app.get('/', (req, res, next) => {
       })
     }
 
-    Usuario.count({}, (err , cantidad) => {
+    Medico.count({}, (err, cantidad) => {
       res.status(200).json({
         ok: true,
         total: cantidad,
-        usuarios
+        medicos
       });
-    });
-
+    })
   });
 
 });
 
-// Crear usuario
+// Crear Medico
 app.post('/', middlewareAutenticacion.verificarToken, (req, res) => {
   let body = req.body;
 
-  const usuario = new Usuario({
+  const medico = new Medico({
     nombre: body.nombre,
-    email: body.email,
-    password: bcrypt.hashSync(body.password, 10),
-    img: body.img,
-    role: body.role
+    usuario: req.usuario._id,
+    hospital: body.hospital
   });
 
-  usuario.save((err, data) => {
+  medico.save((err, data) => {
     if (err) {
       return res.status(400).json({
         ok: false,
@@ -58,19 +55,18 @@ app.post('/', middlewareAutenticacion.verificarToken, (req, res) => {
 
     res.status(201).json({
       ok: true,
-      usuario: data,
-      usuarioToken: req.usuario
+      medico: data
     });
   });
 });
 
 
-// Actualizar usuario
+// Actualizar Medico
 app.put('/:id', middlewareAutenticacion.verificarToken, (req, res) => {
   let id = req.params.id;
   let body = req.body;
 
-  Usuario.findById(id, (err, data) => {
+  Medico.findById(id, (err, medico) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -79,21 +75,21 @@ app.put('/:id', middlewareAutenticacion.verificarToken, (req, res) => {
       });
     }
 
-    if (!data) {
+    if (!medico) {
       return res.status(400).json({
         ok: false,
-        mensaje: 'Peticion PUT fallida, el usuario no existe',
+        mensaje: 'Peticion PUT fallida, el hospital no existe',
         errors: {
           message: 'El usuario no existe'
         }
       });
     }
 
-    usuario.nombre = body.nombre;
-    usuario.email = body.email;
-    usuario.role = body.role;
+    medico.nombre = body.nombre;
+    medico.usuario = req.usuario._id;
+    medico.hospital = body.hospital;
 
-    usuario.save((err, data) => {
+    medico.save((err, data) => {
       if (err) {
         return res.status(400).json({
           ok: false,
@@ -101,12 +97,10 @@ app.put('/:id', middlewareAutenticacion.verificarToken, (req, res) => {
           errors: err
         });
       }
-
-      data.password = '';
       
       res.status(200).json({
         ok: true,
-        usuario: data
+        medico: data
       });
     })
 
@@ -114,7 +108,7 @@ app.put('/:id', middlewareAutenticacion.verificarToken, (req, res) => {
 });
 
 
-// Eliminar usuario
+// Eliminar Medico
 app.delete('/:id', middlewareAutenticacion.verificarToken, (req, res) => {
   let id = req.params.id;
 

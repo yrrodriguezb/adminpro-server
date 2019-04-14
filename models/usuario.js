@@ -14,12 +14,12 @@ let usuarioSchema = new Schema({
   },
   email: {
     type: String,
-    required: [true, 'El correo electronico es obloagtorio'],
+    required: [true, 'El correo electronico es obligatorio'],
     unique: true
   },
   password: {
     type: String,
-    required: [true, 'La contraseña es obloagtorio']
+    required: [true, 'La contraseña es obligatorio']
   },
   img: {
     type: String,

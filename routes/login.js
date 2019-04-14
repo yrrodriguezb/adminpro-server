@@ -7,12 +7,10 @@ const SEED =require('../config/config').SEED;
 
 
 app.post('/', (req, res) => {
-  const body = req.body;
-
-  console.log(body.email);
-  
+  const body = req.body; 
 
   Usuario.findOne({ email: body.email }, (err, usuariodb) => {
+    console.log(usuariodb);
     
     if (err) {
       return res.status(500).json({
