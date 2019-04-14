@@ -36,8 +36,8 @@ app.put('/:tipo/:id', (req, res, next) => {
     });
   }
 
-  let imagen = req.files.imagen;
-  let array = imagen.name.split('.');
+  let archivo = req.files.imagen;
+  let array = archivo.name.split('.');
   let extension = array[array.length - 1].toLowerCase()
 
   // Extensiones Permitidas
@@ -55,14 +55,18 @@ app.put('/:tipo/:id', (req, res, next) => {
 
   // Nombre del archivo
   let fecha = new Date();
-  let token = `${fecha.getFullYear()}_${fecha.getMonth()}_${fecha.getMilliseconds()}`;
-  let nombreArchivo = `${id}_${token}.${extension}`;
+  let token = `${fecha.getFullYear()}${fecha.getMonth()}${fecha.getMilliseconds()}`;
+  let nombreArchivo = `${id}-${token}.${extension}`;
 
   
   // Mover el archivo temporal a la ruta deseada
-  let path = `/uploads/${tipo}/${nombreArchivo}`;
+  let path = `./uploads/${tipo}/${nombreArchivo}`;
   
-  imagen.mv(path, (err) => {
+  archivo.mv(path, err => {
+
+    console.log(err);
+    
+
     return res.status(500).json({
       ok: false,
       mensaje: 'Error al intentar mover la imagen.',
