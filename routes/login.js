@@ -35,28 +35,29 @@ app.post('/google', async (req, res) => {
     });
   });
 
-  Usuario.findById({ email: googleUser.email }, (err, usuario) => {
+  Usuario.findOne({ email: googleUser.email }, (err, usuariodb) => {
     if (err) {
       return res.status(500).json({
         ok: false,
-        mensaje: 'error albuscar usuario'
+        mensaje: 'Error al buscar usuario',
+        errors: err
       });
     }
 
-    if (usuario) {
-      if (!usuario.google) {
+    if (usuariodb) {
+      if (!usuariodb.google) {
         return res.status(400).json({
           ok: false,
           mensaje: 'Debe usar su autenticacion normal'
         });
       } else {
-        let token = jwt.sign({ usuario }, SEED, { expiresIn: 14400 }); // 4 Horas
+        let token = jwt.sign({ usuario: usuariodb }, SEED, { expiresIn: 14400 }); // 4 Horas
 
         res.status(200).json({
           ok: true,
-          usuario,
+          usuario: usuariodb,
           token,
-          id: usuario._id
+          id: usuariodb._id
         })
       } 
     } else {
@@ -70,13 +71,13 @@ app.post('/google', async (req, res) => {
       usuario.password = '**********';
 
       usuario.save((err, usuariodb) => {
-        let token = jwt.sign({ usuario }, SEED, { expiresIn: 14400 }); // 4 Horas
+        let token = jwt.sign({ usuario: usuariodb }, SEED, { expiresIn: 14400 }); // 4 Horas
 
         res.status(200).json({
           ok: true,
           usuario: usuariodb,
           token,
-          id: usuario._id
+          id: usuariodb._id
         })
       });
 

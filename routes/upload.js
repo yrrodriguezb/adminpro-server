@@ -1,7 +1,8 @@
-const fs = require('fs');
 const express = require('express')
 const fileupload = require('express-fileupload');
+const fs = require('fs');
 const app = express();
+
 const Usuario = require('../models/usuario');
 const Medico = require('../models/medico');
 const Hospital = require('../models/hospital');
@@ -25,6 +26,9 @@ app.put('/:tipo/:id', (req, res, next) => {
       }
     });
   }
+
+  console.log(req.file)
+  console.log(req.files)
 
   if (!req.files) {
     return res.status(400).json({
@@ -76,6 +80,7 @@ app.put('/:tipo/:id', (req, res, next) => {
 
   subirImagenPorTipo (tipo, id, nombreArchivo, res);
 });
+
 
 function subirImagenPorTipo (tipo, id, nombreArchivo, res) {
 

@@ -36,7 +36,8 @@ app.get('/', (req, res, next) => {
 });
 
 // Crear usuario
-app.post('/', middlewareAutenticacion.verificarToken, (req, res) => {
+// middlewareAutenticacion.verificarToken,
+app.post('/', (req, res) => {
   let body = req.body;
 
   const usuario = new Usuario({
@@ -70,7 +71,7 @@ app.put('/:id', middlewareAutenticacion.verificarToken, (req, res) => {
   let id = req.params.id;
   let body = req.body;
 
-  Usuario.findById(id, (err, data) => {
+  Usuario.findById(id, (err, usuario) => {
     if (err) {
       return res.status(500).json({
         ok: false,
@@ -79,7 +80,7 @@ app.put('/:id', middlewareAutenticacion.verificarToken, (req, res) => {
       });
     }
 
-    if (!data) {
+    if (!usuario) {
       return res.status(400).json({
         ok: false,
         mensaje: 'Peticion PUT fallida, el usuario no existe',
