@@ -1,2 +1,5 @@
 node_modules
 secrets
+uploads/usuarios/*
+uploads/medicos/*
+uploads/hospitales/*
